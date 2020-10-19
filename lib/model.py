@@ -38,7 +38,7 @@ class Model(nn.Module):
 def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
     model.train()
     final_loss = 0
-
+    count = 0
     for data in dataloader:
         optimizer.zero_grad()
         inputs, targets = data['x'].to(device), data['y'].to(device)
@@ -47,11 +47,13 @@ def train_fn(model, optimizer, scheduler, loss_fn, dataloader, device):
         loss = loss_fn(outputs, targets)
         loss.backward()
         optimizer.step()
-        scheduler.step()
+        # change the lr if use OneCycle schedule
+        # scheduler.step()
 
         final_loss += loss.item()
 
     final_loss /= len(dataloader)
+    scheduler.step()
 
     return final_loss
 
